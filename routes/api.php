@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\VehicleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,5 +25,9 @@ Route::prefix('v1')->group(function () {
 
   Route::middleware('jwt.verify')->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
+    Route::post('vehicles', [VehicleController::class, 'getVehicleStock']);
+    Route::post('vehicles/add', [VehicleController::class, 'addVehicle']);
+    Route::post('vehicles/sell', [VehicleController::class, 'sellVehicle']);
+    Route::post('vehicles/report', [VehicleController::class, 'salesReport']);
   });
 });
