@@ -20,16 +20,19 @@ class VehicleController extends Controller
 
   public function getVehicleStock(): JsonResponse
   {
+    // Mengambil data stok kendaraan
     $vehicles = $this->vehicleService->getVehicleStock();
+
     return response()->json([
       'success' => true,
-      'message' => 'Get vehicle stock',
+      'message' => 'Dapatkan stok kendaraan',
       'data' => $vehicles
     ]);
   }
 
   public function sellVehicle(Request $request): JsonResponse
   {
+    // Validasi input
     $validator = \Validator::make($request->all(), [
       'kendaraan_id' => 'required'
     ]);
@@ -37,43 +40,49 @@ class VehicleController extends Controller
     if ($validator->fails()) {
       return response()->json([
         'success' => false,
-        'message' => 'Validation failed',
+        'message' => 'Validasi gagal',
         'errors' => $validator->errors()
       ], 422);
     }
 
+    // Mendapatkan ID kendaraan dari request
     $vehicleId = $request->input('kendaraan_id');
 
+    // Cek keberadaan kendaraan
     $vehicle = $this->vehicleService->findById($vehicleId);
 
     if (!$vehicle) {
       return response()->json([
         'success' => false,
-        'message' => 'Vehicle not found'
+        'message' => 'Kendaraan tidak ditemukan'
       ], 404);
     }
 
+    // Cek apakah kendaraan sudah terjual
     if ($vehicle['terjual']) {
       return response()->json([
         'success' => false,
-        'message' => 'Vehicle has been sold'
+        'message' => 'Kendaraan sudah terjual'
       ], 404);
     }
 
+    // Jual kendaraan
     $vehicleId = $this->vehicleService->sellVehicle($vehicle);
     $vehicle = $this->vehicleService->findById($vehicleId);
 
     return response()->json([
       'success' => true,
-      'message' => 'Vehicle sold successfully',
+      'message' => 'Kendaraan terjual',
       'data' => $vehicle
     ]);
   }
 
   public function salesReport()
   {
+    // Mendapatkan data stok kendaraan
     $vehicles = $this->vehicleService->getVehicleStock();
 
+    // Menghitung laporan penjualan kendaraan
     $carsSold = 0;
     $carsRemaining = 0;
     $motorcyclesSold = 0;
@@ -89,22 +98,25 @@ class VehicleController extends Controller
       if ($isCar) {
         if ($isSold) {
           $carsSold++;
+        } else {
+          $carsRemaining++;
         }
-        $carsRemaining++;
         $totalCars++;
       }
       if ($isMotorcycle) {
         if ($isSold) {
           $motorcyclesSold++;
+        } else {
+          $motorcyclesRemaining++;
         }
-        $motorcyclesRemaining++;
         $totalMotorcycles++;
       }
     }
 
+    // Mengembalikan laporan penjualan kendaraan
     return response()->json([
       'success' => true,
-      'message' => 'Get sales report',
+      'message' => 'Dapatkan laporan penjualan',
       'data' => [
         'mobil' => [
           'terjual' => $carsSold,
@@ -122,6 +134,7 @@ class VehicleController extends Controller
 
   public function addVehicle(Request $request): JsonResponse
   {
+    // Validasi input
     $validator = \Validator::make($request->all(), [
       'tahun_keluaran' => 'required',
       'warna' => 'required',
@@ -133,18 +146,21 @@ class VehicleController extends Controller
     if ($validator->fails()) {
       return response()->json([
         'success' => false,
-        'message' => 'Validation failed',
+        'message' => 'Validasi gagal',
         'errors' => $validator->errors()
       ], 422);
     }
 
-    $formData = $request->all();
-    $vehicleId = $this->vehicleService->addVehicle($formData);
+    // Mendapatkan data kendaraan dari request
+    $requestData = $request->all();
+
+    // Menambahkan kendaraan
+    $vehicleId = $this->vehicleService->addVehicle($requestData);
     $vehicle = $this->vehicleService->findById($vehicleId);
 
     return response()->json([
       'success' => true,
-      'message' => 'Success added vehicle',
+      'message' => 'Kendaraan berhasil ditambahkan',
       'data' => $vehicle
     ]);
   }

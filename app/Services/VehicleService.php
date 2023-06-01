@@ -17,58 +17,69 @@ class VehicleService
 
   public function getVehicleStock(): array
   {
+    // Mengambil data stok kendaraan dari repository
     $vehicles = $this->vehicleRepository->getAll();
     return $vehicles;
   }
 
-  public function findById(string $id): array
+  public function findById(string $id): ?array
   {
+    // Mencari kendaraan berdasarkan ID dari repository
     $vehicle = $this->vehicleRepository->findById($id);
     return $vehicle;
   }
 
   public function sellVehicle(array $vehicle): string
   {
+    // Menandai kendaraan sebagai terjual
     $vehicle['terjual'] = true;
+    
+    // Menyimpan perubahan kendaraan ke repository
     $vehicleId = $this->vehicleRepository->save($vehicle);
     return $vehicleId;
   }
 
-  public function addVehicle(array $formData): string
+  public function addVehicle(array $requestData): string
   {
-    $type = $formData['tipe_kendaraan'];
+    $type = $requestData['tipe_kendaraan'];
     if ($type === 'motor') {
-      $motorcycle = $this->addMotorcycle($formData);
+      // Menambahkan detail kendaraan motor
+      $motorcycle = $this->addMotorcycle($requestData);
       $data['motor'] = $motorcycle;
     } else if ($type === 'mobil') {
-      $car = $this->addCar($formData);
+      // Menambahkan detail kendaraan mobil
+      $car = $this->addCar($requestData);
       $data['mobil'] = $car;
     }
 
-    $data['tahun_keluaran'] = $formData['tahun_keluaran'];
-    $data['warna'] = $formData['warna'];
-    $data['harga'] = $formData['harga'];
-    $data['tipe_kendaraan'] = $formData['tipe_kendaraan'];
+    // Menambahkan informasi umum kendaraan
+    $data['tahun_keluaran'] = $requestData['tahun_keluaran'];
+    $data['warna'] = $requestData['warna'];
+    $data['harga'] = $requestData['harga'];
+    $data['tipe_kendaraan'] = $requestData['tipe_kendaraan'];
     $data['terjual'] = false;
 
+    // Menyimpan kendaraan ke repository
     $vehicleId = $this->vehicleRepository->save($data);
     return $vehicleId;
   }
 
-  public function addMotorcycle(array $formData): array
+  private function addMotorcycle(array $requestData): array
   {
-    $data['mesin'] = $formData['mesin'];
-    $data['tipe_suspensi'] = $formData['tipe_suspensi'];
-    $data['tipe_transmisi'] = $formData['tipe_transmisi'];
+    // Menambahkan detail kendaraan motor
+    $data['mesin'] = $requestData['mesin'];
+    $data['tipe_suspensi'] = $requestData['tipe_suspensi'];
+    $data['tipe_transmisi'] = $requestData['tipe_transmisi'];
 
     return $data;
   }
 
-  public function addCar(array $formData): array
+  private function addCar(array $requestData): array
   {
-    $data['mesin'] = $formData['mesin'];
-    $data['kapasitas_penumpang'] = $formData['kapasitas_penumpang'];
-    $data['tipe'] = $formData['tipe'];
+    // Menambahkan detail kendaraan mobil
+    $data['mesin'] = $requestData['mesin'];
+    $data['kapasitas_penumpang'] = $requestData['kapasitas_penumpang'];
+    $data['tipe'] = $requestData['tipe'];
 
     return $data;
   }
