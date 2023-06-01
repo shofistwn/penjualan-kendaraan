@@ -90,6 +90,7 @@ class AuthController extends Controller
     if ($user) {
       // Jika penyimpanan sukses, kembalikan respons berhasil
       return response()->json([
+        'success' => true,
         'message' => 'Pendaftaran berhasil'
       ]);
     }

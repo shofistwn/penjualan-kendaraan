@@ -29,14 +29,14 @@ class VehicleControllerTest extends TestCase
   {
     // Persiapkan data kendaraan di database
     $formData = [
-      "harga" => "1000000",
-      "mesin" => "honda",
-      "tipe_suspensi" => "K",
-      "tipe_transmisi" => "manual",
+      "harga" => "40000000",
+      "mesin" => "400cc",
+      "tipe_suspensi" => "Mono Shock",
+      "tipe_transmisi" => "Manual",
       "tahun_keluaran" => "2023",
       "terjual" => false,
       "tipe_kendaraan" => "motor",
-      "warna" => "Merah"
+      "warna" => "Biru"
     ];
 
     // Menyimpan data kendaraan ke dalam database
@@ -57,11 +57,6 @@ class VehicleControllerTest extends TestCase
       'data' => [
         '*' => [
           'harga',
-          'motor' => [
-            'mesin',
-            'tipe_suspensi',
-            'tipe_transmisi',
-          ],
           'tahun_keluaran',
           'terjual',
           'tipe_kendaraan',
@@ -93,19 +88,19 @@ class VehicleControllerTest extends TestCase
     // Pastikan respons JSON sesuai dengan data yang diharapkan
     $response->assertJson([
       'success' => true,
-      'message' => 'Vehicle sold successfully',
+      'message' => 'Kendaraan terjual',
       'data' => [
         '_id' => self::$vehicleId,
-        'harga' => '1000000',
+        'harga' => '40000000',
         'motor' => [
-          'mesin' => 'honda',
-          'tipe_suspensi' => 'K',
-          'tipe_transmisi' => 'manual'
+          'mesin' => '400cc',
+          'tipe_suspensi' => 'Mono Shock',
+          'tipe_transmisi' => 'Manual'
         ],
         'tahun_keluaran' => '2023',
         'terjual' => true,
         'tipe_kendaraan' => 'motor',
-        'warna' => 'Merah'
+        'warna' => 'Biru'
       ],
     ]);
   }

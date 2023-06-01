@@ -44,11 +44,11 @@ class VehicleService
     $type = $requestData['tipe_kendaraan'];
     if ($type === 'motor') {
       // Menambahkan detail kendaraan motor
-      $motorcycle = $this->addMotorcycle($requestData);
+      $motorcycle = $this->addMotorVehicle($requestData);
       $data['motor'] = $motorcycle;
     } else if ($type === 'mobil') {
       // Menambahkan detail kendaraan mobil
-      $car = $this->addCar($requestData);
+      $car = $this->addCarVehicle($requestData);
       $data['mobil'] = $car;
     }
 
@@ -64,7 +64,7 @@ class VehicleService
     return $vehicleId;
   }
 
-  private function addMotorcycle(array $requestData): array
+  private function addMotorVehicle(array $requestData): array
   {
     // Menambahkan detail kendaraan motor
     $data['mesin'] = $requestData['mesin'];
@@ -74,7 +74,7 @@ class VehicleService
     return $data;
   }
 
-  private function addCar(array $requestData): array
+  private function addCarVehicle(array $requestData): array
   {
     // Menambahkan detail kendaraan mobil
     $data['mesin'] = $requestData['mesin'];

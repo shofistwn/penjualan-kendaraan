@@ -37,7 +37,6 @@ Route::prefix('/v1')->group(function () {
   Route::post('/auth/register', [AuthController::class, 'register']);
 
   /*
-  
    * Rute yang memerlukan autentikasi menggunakan JWT
    */
   Route::middleware('jwt.verify')->group(function () {
