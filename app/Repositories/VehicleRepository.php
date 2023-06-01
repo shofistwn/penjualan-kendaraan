@@ -35,4 +35,49 @@ class VehicleRepository
     $vehicleId = $this->vehicleModel->save($vehicle);
     return $vehicleId;
   }
+
+  public function countSalesByVehicleType(): array
+  {
+    // Menghitung penjualan berdasarkan tipe kendaraan
+    $filter = [
+      [
+        '$group' => [
+          '_id' => '$tipe_kendaraan',
+          'terjual' => [
+            '$sum' => [
+              '$cond' => [
+                ['$eq' => ['$terjual', true]],
+                1,
+                0
+              ]
+            ]
+          ],
+          'tersisa' => [
+            '$sum' => [
+              '$cond' => [
+                ['$eq' => ['$terjual', false]],
+                1,
+                0
+              ]
+            ]
+          ],
+          'total' => [
+            '$sum' => 1
+          ]
+        ]
+      ],
+      [
+        '$project' => [
+          'tipe_kendaraan' => '$_id',
+          'terjual' => 1,
+          'tersisa' => 1,
+          'total' => 1,
+          '_id' => 0
+        ]
+      ]
+    ];
+
+    $result = $this->vehicleModel->count($filter);
+    return $result;
+  }
 }

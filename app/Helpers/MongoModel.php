@@ -73,4 +73,9 @@ class MongoModel
   {
     $this->collection->deleteOne($filter);
   }
+  public function count(array $filter): array
+  {
+    $result = $this->collection->aggregate($filter)->toArray();
+    return $result;
+  }
 }

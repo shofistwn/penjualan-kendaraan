@@ -79,56 +79,14 @@ class VehicleController extends Controller
 
   public function salesReport()
   {
-    // Mendapatkan data stok kendaraan
-    $vehicles = $this->vehicleService->getVehicleStock();
-
-    // Menghitung laporan penjualan kendaraan
-    $carsSold = 0;
-    $carsRemaining = 0;
-    $motorcyclesSold = 0;
-    $motorcyclesRemaining = 0;
-    $totalCars = 0;
-    $totalMotorcycles = 0;
-
-    foreach ($vehicles as $vehicle) {
-      $isCar = $vehicle['tipe_kendaraan'] === 'mobil';
-      $isMotorcycle = $vehicle['tipe_kendaraan'] === 'motor';
-      $isSold = $vehicle['terjual'];
-
-      if ($isCar) {
-        if ($isSold) {
-          $carsSold++;
-        } else {
-          $carsRemaining++;
-        }
-        $totalCars++;
-      }
-      if ($isMotorcycle) {
-        if ($isSold) {
-          $motorcyclesSold++;
-        } else {
-          $motorcyclesRemaining++;
-        }
-        $totalMotorcycles++;
-      }
-    }
+    // Mendapatkan laporan penjualan kendaraan
+    $vehicles = $this->vehicleService->countSalesByVehicleType();
 
     // Mengembalikan laporan penjualan kendaraan
     return response()->json([
       'success' => true,
       'message' => 'Dapatkan laporan penjualan',
-      'data' => [
-        'mobil' => [
-          'terjual' => $carsSold,
-          'tersisa' => $carsRemaining,
-          'total' => $totalCars
-        ],
-        'motor' => [
-          'terjual' => $motorcyclesSold,
-          'tersisa' => $motorcyclesRemaining,
-          'total' => $totalMotorcycles
-        ]
-      ]
+      'data' => $vehicles
     ]);
   }
 

@@ -33,7 +33,7 @@ class VehicleService
   {
     // Menandai kendaraan sebagai terjual
     $vehicle['terjual'] = true;
-    
+
     // Menyimpan perubahan kendaraan ke repository
     $vehicleId = $this->vehicleRepository->save($vehicle);
     return $vehicleId;
@@ -81,6 +81,38 @@ class VehicleService
     $data['kapasitas_penumpang'] = $requestData['kapasitas_penumpang'];
     $data['tipe'] = $requestData['tipe'];
 
+    return $data;
+  }
+  public function countSalesByVehicleType(): array
+  {
+    // Mengambil hasil perhitungan penjualan kendaraan dari repository
+    $result = $this->vehicleRepository->countSalesByVehicleType();
+
+    // Inisialisasi array untuk menyimpan hasil
+    $data = [];
+
+    // Melakukan iterasi pada hasil perhitungan
+    foreach ($result as $value) {
+      // Jika tipe kendaraan adalah 'motor'
+      if ($value['tipe_kendaraan'] === 'motor') {
+        // Menyimpan data penjualan kendaraan motor
+        $data['motor'] = [
+          'terjual' => $value['terjual'],
+          'tersisa' => $value['tersisa'],
+          'total' => $value['total'],
+        ];
+      } else {
+        // Jika tipe kendaraan bukan 'motor' (dianggap 'mobil')
+        // Menyimpan data penjualan kendaraan mobil
+        $data['mobil'] = [
+          'terjual' => $value['terjual'],
+          'tersisa' => $value['tersisa'],
+          'total' => $value['total'],
+        ];
+      }
+    }
+
+    // Mengembalikan data hasil perhitungan
     return $data;
   }
 }
