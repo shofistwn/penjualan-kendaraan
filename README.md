@@ -1,64 +1,261 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Panduan Instalasi Proyek Penjualan Kendaraan REST API Laravel
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Proyek Penjualan Kendaraan REST API Laravel adalah sebuah aplikasi berbasis Laravel yang menyediakan API untuk mengelola penjualan kendaraan.
 
-## About Laravel
+## Daftar Isi
+- [Prasyarat](#prasyarat)
+- [Langkah-langkah Instalasi](#langkah-langkah-instalasi)
+- [Dokumentasi API](#dokumentasi-api)
+  - [Autentikasi](#autentikasi)
+  - [Kendaraan](#kendaraan)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Prasyarat
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Sebelum memulai instalasi, pastikan Anda telah memenuhi prasyarat berikut:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. PHP v8.0
+2. Composer
+3. MongoDB v4.2
+4. Git
 
-## Learning Laravel
+## Langkah-langkah Instalasi
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Berikut adalah langkah-langkah untuk menginstal proyek Penjualan Kendaraan REST API Laravel:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Clone Repositori
 
-## Laravel Sponsors
+   Buka terminal atau command prompt dan jalankan perintah berikut untuk mengkloning repositori:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+   ```bash
+   git clone https://github.com/shofistwn/penjualan-kendaraan.git
+   ```
 
-### Premium Partners
+2. Pindah ke Direktori Proyek
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+   Masuk ke direktori proyek yang telah di-kloning dengan menjalankan perintah:
 
-## Contributing
+   ```bash
+   cd penjualan-kendaraan
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. Instal Dependensi
 
-## Code of Conduct
+   Jalankan perintah berikut untuk menginstal semua dependensi yang diperlukan oleh proyek:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+   ```bash
+   composer install
+   ```
 
-## Security Vulnerabilities
+4. Konfigurasi Lingkungan
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+   Salin file `.env.example` menjadi `.env` dengan menjalankan perintah:
 
-## License
+   ```bash
+   cp .env.example .env
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. Generate Kunci Aplikasi
+
+   Jalankan perintah berikut untuk menghasilkan kunci aplikasi:
+
+   ```bash
+   php artisan key:generate
+   ```
+
+6. Konfigurasi Database
+
+   Buka file `.env` dan ubah pengaturan database seperti berikut:
+
+   ```bash
+    DB_CONNECTION=mongodb
+    DB_HOST=127.0.0.1
+    DB_PORT=27017
+    DB_DATABASE=penjualan_kendaraan
+    DB_USERNAME=
+    DB_PASSWORD=
+   ```
+
+7. Mengimpor Database
+
+    Import file database yang berada di folder `/documents/database/penjualan_kendaraan.agz`
+    
+8. Mengimpor Collection Postman
+
+    Import file collection yang berada di folder `/documents/postman/`
+    
+8. Jalankan Server Lokal
+
+   Terakhir, jalankan server lokal dengan perintah:
+
+   ```bash
+   php artisan serve
+   ```
+
+   Server akan berjalan di `http://localhost:8000`.
+
+## Dokumentasi API
+
+Berikut adalah dokumentasi API yang tersedia dalam proyek ini.
+
+### Autentikasi
+
+1. Login
+
+    **Request**:
+    ```bash
+    POST /api/v1/auth/login
+
+    Header:
+    Authorization: Bearer <JWT Token>
+    
+    Body:
+    {
+        "email": "user@mail.com",
+        "password": "password"
+    }
+    ```
+    
+    **Response**:
+    ```json
+    {
+        "success": true,
+        "message": "Login berhasil",
+        "data": {
+            "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ...",
+            "token_type": "bearer",
+            "expires_in": 3600
+        }
+    }
+    ```
+
+2. Logout
+
+    **Request**:
+    ```bash
+    POST /api/v1/auth/login
+
+    Header:
+    Authorization: Bearer <JWT Token>
+    ```
+    
+    **Response**:
+    ```json
+    {
+        "success": true,
+        "message": "Logout berhasil"
+    }
+    ```
+
+### Kendaraan
+
+1. Mengambil Stok Kendaraan
+
+    **Request**:
+    ```bash
+    POST /api/v1/vehicles/stock
+
+    Header:
+    Authorization: Bearer <JWT Token>
+    ```
+    
+    **Response**:
+    ```json
+    {
+        "success": true,
+        "message": "Dapatkan stok kendaraan",
+        "data": [
+            {
+                "_id": "64788d11904ea19c110f2425",
+                "harga": "25000000",
+                "motor": {
+                    "mesin": "150cc",
+                    "tipe_suspensi": "Telescopic",
+                    "tipe_transmisi": "Manual"
+                },
+                "tahun_keluaran": "2022",
+                "terjual": false,
+                "tipe_kendaraan": "motor",
+                "warna": "Merah"
+            },
+            {
+                "_id": "64788d58904ea19c110f2426",
+                "harga": "850000000",
+                "mobil": {
+                    "mesin": "1200cc",
+                    "kapasitas_penumpang": "7",
+                    "tipe": "SUV"
+                },
+                "tahun_keluaran": "2023",
+                "terjual": false,
+                "tipe_kendaraan": "mobil",
+                "warna": "Merah"
+            }
+        ]
+    }
+    ```
+
+2. Menjual Kendaraan
+
+    **Request**:
+    ```bash
+    POST /api/v1/vehicles/sell
+
+    Header:
+    Authorization: Bearer <JWT Token>
+    
+    Body:
+    {
+        "kendaraan_id": "64788d11904ea19c110f2425"
+    }
+    ```
+    
+    **Response**:
+    ```json
+    {
+        "success": true,
+        "message": "Kendaraan terjual",
+        "data": {
+            "_id": "64788d11904ea19c110f2425",
+            "harga": "25000000",
+            "motor": {
+                "mesin": "150cc",
+                "tipe_suspensi": "Telescopic",
+                "tipe_transmisi": "Manual"
+            },
+            "tahun_keluaran": "2022",
+            "terjual": true,
+            "tipe_kendaraan": "motor",
+            "warna": "Merah"
+        }
+    }
+    ```
+
+3. Laporan Penjualan
+
+    **Request**:
+    ```bash
+    POST /api/v1/vehicles/sales-report
+
+    Header:
+    Authorization: Bearer <JWT Token>
+    ```
+    
+    **Response**:
+    ```json
+    {
+        "success": true,
+        "message": "Dapatkan laporan penjualan",
+        "data": {
+            "mobil": {
+                "terjual": 1,
+                "tersisa": 1,
+                "total": 2
+            },
+            "motor": {
+                "terjual": 1,
+                "tersisa": 2,
+                "total": 3
+            }
+        }
+    }
+    ```
