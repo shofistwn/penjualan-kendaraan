@@ -1,0 +1,320 @@
+{
+	"info": {
+		"_postman_id": "d4c399a7-28a7-44fa-9204-7eb236fa92bc",
+		"name": "penjualan-kendaraan",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Jane Doe",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "usersg3@mail.co",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/auth/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "user@mail.com",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/auth/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/auth/logout",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "vehicles",
+			"item": [
+				{
+					"name": "vehicle-stock",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/vehicles/stock",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"vehicles",
+								"stock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sales-report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/vehicles/sales-report",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"vehicles",
+								"sales-report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sell-vehicle",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "kendaraan_id",
+									"value": "647948503cac74567d0f4916",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/vehicles/sell",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"vehicles",
+								"sell"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-motor-vehicle",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "tahun_keluaran",
+									"value": "2018",
+									"type": "default"
+								},
+								{
+									"key": "warna",
+									"value": "Putih",
+									"type": "default"
+								},
+								{
+									"key": "harga",
+									"value": "40000000",
+									"type": "default"
+								},
+								{
+									"key": "mesin",
+									"value": "400cc",
+									"type": "default"
+								},
+								{
+									"key": "tipe_suspensi",
+									"value": "Mono Shock",
+									"type": "default"
+								},
+								{
+									"key": "tipe_transmisi",
+									"value": "Automatic",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/vehicles/add-motor",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"vehicles",
+								"add-motor"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-car-vehicle",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "tahun_keluaran",
+									"value": "2022",
+									"type": "default"
+								},
+								{
+									"key": "warna",
+									"value": "Putih",
+									"type": "default"
+								},
+								{
+									"key": "harga",
+									"value": "300000000",
+									"type": "default"
+								},
+								{
+									"key": "mesin",
+									"value": "2000cc",
+									"type": "default"
+								},
+								{
+									"key": "kapasitas_penumpang",
+									"value": "5",
+									"type": "default"
+								},
+								{
+									"key": "tipe",
+									"value": "MPV",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/vehicles/add-car",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"vehicles",
+								"add-car"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:8000/api/v1",
+			"type": "default"
+		},
+		{
+			"key": "token",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL3YxL2F1dGgvbG9naW4iLCJpYXQiOjE2ODU2MjY5NDIsImV4cCI6MTY4NTYzMDU0MiwibmJmIjoxNjg1NjI2OTQyLCJqdGkiOiJJYjcyRklzbE9Bc1FOS1pHIiwic3ViIjoiNjQ3ODEyNzRjN2E3ZWM0YTg3MDBmZjI5IiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.hSZnWpv0x_XM49H0Xl3ld-jIRJR5b1yQBJ2j8MbvQfM",
+			"type": "default"
+		}
+	]
+}
