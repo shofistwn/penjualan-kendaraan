@@ -8,9 +8,9 @@ use Tests\TestCase;
 
 class VehicleControllerTest extends TestCase
 {
-  protected $vehicleService;
-  protected $token;
-  protected static $vehicleId;
+  private $vehicleService;
+  private $token;
+  private static $vehicleId;
 
   protected function setUp(): void
   {
@@ -21,6 +21,116 @@ class VehicleControllerTest extends TestCase
 
     $payload = ['email' => 'user@mail.com', 'password' => 'password'];
     $this->token = auth()->attempt($payload);
+  }
+
+  public function testAddMotorSuccess()
+  {
+    $requestData = [
+      'tahun_keluaran' => '2018',
+      'warna' => 'Putih',
+      'harga' => '40000000',
+      'mesin' => '400cc',
+      'tipe_suspensi' => 'Mono Shock',
+      'tipe_transmisi' => 'Automatic',
+    ];
+
+    $response = $this->withHeaders([
+      'Authorization' => 'Bearer ' . $this->token,
+    ])->postJson('/api/v1/vehicles/add-motor', $requestData);
+
+    $response->assertStatus(200);
+  }
+
+  public function testAddMotorValidationFailed()
+  {
+    $requestData = [
+      'tahun_keluaran' => '2018',
+      'warna' => 'Putih',
+      'harga' => '40000000',
+      'tipe_suspensi' => 'Mono Shock',
+      'tipe_transmisi' => 'Automatic',
+    ];
+
+    $response = $this->withHeaders([
+      'Authorization' => 'Bearer ' . $this->token,
+    ])->postJson('/api/v1/vehicles/add-motor', $requestData);
+
+    $response->assertStatus(422);
+    $response->assertJson([
+      "success" => false,
+      "message" => "Validasi gagal",
+      "errors" => [
+        "mesin" => [
+          "The mesin field is required."
+        ]
+      ]
+    ]);
+  }
+
+  public function testAddMotorInvalidToken()
+  {
+    $response = $this->withHeaders([
+      'Authorization' => 'Bearer ' . 'salahhtoken',
+    ])->postJson('/api/v1/vehicles/add-motor');
+
+    $response->assertStatus(200);
+    $response->assertJson([
+      "status" => "Token is Invalid"
+    ]);
+  }
+
+  public function testAddCarSuccess()
+  {
+    $requestData = [
+      'tahun_keluaran' => 2022,
+      'warna' => 'Putih',
+      'harga' => 300000000,
+      'mesin' => '2000cc',
+      'kapasitas_penumpang' => 5,
+      'tipe' => 'MPV',
+    ];
+
+    $response = $this->postJson('/api/v1/vehicles/add-car', $requestData);
+
+    $response->assertStatus(200);
+  }
+
+  public function testAddCarValidationFailed()
+  {
+    $requestData = [
+      'tahun_keluaran' => 2022,
+      'warna' => 'Putih',
+      'harga' => 300000000,
+      'kapasitas_penumpang' => 5,
+      'tipe' => 'MPV',
+    ];
+
+    $response = $this->withHeaders([
+      'Authorization' => 'Bearer ' . $this->token,
+    ])->postJson('/api/v1/vehicles/add-car', $requestData);
+
+    $response->assertStatus(422);
+    $response->assertJson([
+      "success" => false,
+      "message" => "Validasi gagal",
+      "errors" => [
+        "mesin" => [
+          "The mesin field is required."
+        ]
+      ]
+    ]);
+  }
+
+  public function testAddCarInvalidToken()
+  {
+    $response = $this->withHeaders([
+      'Authorization' => 'Bearer ' . 'salahhtoken',
+    ])->postJson('/api/v1/vehicles/add-car');
+
+    $response->assertStatus(200);
+    $response->assertJson([
+      "status" => "Token is Invalid"
+    ]);
   }
 
   public function testGetVehicleStock()
@@ -46,6 +156,18 @@ class VehicleControllerTest extends TestCase
     ]);
   }
 
+  public function testGetVehicleStockInvalidToken()
+  {
+    $response = $this->withHeaders([
+      'Authorization' => 'Bearer ' . 'salahhtoken',
+    ])->get('/api/v1/vehicles/stock');
+
+    $response->assertStatus(200);
+    $response->assertJson([
+      "status" => "Token is Invalid"
+    ]);
+  }
+
   public function testSellVehicleWithSuccessfully()
   {
     $id = self::$vehicleId;
@@ -62,7 +184,7 @@ class VehicleControllerTest extends TestCase
     ]);
   }
 
-  public function testSellVehicleValidationError()
+  public function testSellVehicleValidationFailed()
   {
     $response = $this->sellVehicleRequest([]);
 
@@ -103,6 +225,18 @@ class VehicleControllerTest extends TestCase
     ]);
   }
 
+  public function testSellVehicleInvalidToken()
+  {
+    $response = $this->withHeaders([
+      'Authorization' => 'Bearer ' . 'salahhtoken',
+    ])->postJson('/api/v1/vehicles/sell');
+
+    $response->assertStatus(200);
+    $response->assertJson([
+      "status" => "Token is Invalid"
+    ]);
+  }
+
   public function testSalesReport()
   {
     $response = $this->getSalesReportRequest();
@@ -123,6 +257,18 @@ class VehicleControllerTest extends TestCase
           'total',
         ],
       ],
+    ]);
+  }
+
+  public function testSalesReportInvalidToken()
+  {
+    $response = $this->withHeaders([
+      'Authorization' => 'Bearer ' . 'salahhtoken',
+    ])->get('/api/v1/vehicles/sales-report');
+
+    $response->assertStatus(200);
+    $response->assertJson([
+      "status" => "Token is Invalid"
     ]);
   }
 
