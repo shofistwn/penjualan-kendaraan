@@ -77,11 +77,11 @@ Berikut adalah langkah-langkah untuk menginstal proyek Penjualan Kendaraan REST 
 
 7. Mengimpor Database
 
-    Import file database yang berada di folder `/documents/database/penjualan_kendaraan.agz`
+    Import file database yang berada di `/documents/database/penjualan_kendaraan.agz`
     
 8. Mengimpor Collection Postman
 
-    Import file collection yang berada di folder `/documents/postman/`
+    Import file collection yang berada di `/documents/postman/penjualan-kendaraan.postman_collection.json`
     
 8. Jalankan Server Lokal
 

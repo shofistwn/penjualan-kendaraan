@@ -25,23 +25,82 @@ class VehicleControllerTest extends TestCase
 
   public function testGetVehicleStock()
   {
-    $formData = $this->prepareVehicleData();
+    $formData = $this->getVehicleFormData();
     self::$vehicleId = $this->vehicleService->addVehicle($formData);
 
     $response = $this->getVehicleStockRequest();
 
     $response->assertStatus(200);
-    $response->assertJsonStructure($this->getVehicleStockJsonStructure());
+    $response->assertJsonStructure([
+      'success',
+      'message',
+      'data' => [
+        '*' => [
+          'harga',
+          'tahun_keluaran',
+          'terjual',
+          'tipe_kendaraan',
+          'warna',
+        ],
+      ],
+    ]);
   }
 
-  public function testSellVehicle()
+  public function testSellVehicleWithSuccessfully()
   {
     $id = self::$vehicleId;
-    $response = $this->sellVehicleRequest($id);
+
+    $response = $this->sellVehicleRequest(['kendaraan_id' => $id]);
 
     $this->assertVehicleSold($id);
+
     $response->assertStatus(200);
-    $response->assertJson($this->getSellVehicleJsonData());
+    $response->assertJson([
+      'success' => true,
+      'message' => 'Kendaraan terjual',
+      'data' => $this->getExpectedVehicleData($id, true),
+    ]);
+  }
+
+  public function testSellVehicleValidationError()
+  {
+    $response = $this->sellVehicleRequest([]);
+
+    $response->assertStatus(422);
+    $response->assertJson([
+      "success" => false,
+      "message" => "Validasi gagal",
+      "errors" => [
+        "kendaraan_id" => [
+          "The kendaraan id field is required."
+        ]
+      ]
+    ]);
+  }
+
+  public function testSellVehicleWithNotFoundVehicle()
+  {
+    $response = $this->sellVehicleRequest(['kendaraan_id' => '1']);
+
+    $response->assertStatus(404);
+    $response->assertJson([
+      "success" => false,
+      "message" => "Kendaraan tidak ditemukan"
+    ]);
+  }
+
+  public function testSellVehicleWithAlreadySoldVehicle()
+  {
+    $id = self::$vehicleId;
+    $this->assertVehicleSold($id);
+
+    $response = $this->sellVehicleRequest(['kendaraan_id' => $id]);
+
+    $response->assertStatus(404);
+    $response->assertJson([
+      "success" => false,
+      "message" => "Kendaraan sudah terjual"
+    ]);
   }
 
   public function testSalesReport()
@@ -49,10 +108,25 @@ class VehicleControllerTest extends TestCase
     $response = $this->getSalesReportRequest();
 
     $response->assertStatus(200);
-    $response->assertJsonStructure($this->getSalesReportJsonStructure());
+    $response->assertJsonStructure([
+      'success',
+      'message',
+      'data' => [
+        'mobil' => [
+          'terjual',
+          'tersisa',
+          'total',
+        ],
+        'motor' => [
+          'terjual',
+          'tersisa',
+          'total',
+        ],
+      ],
+    ]);
   }
 
-  protected function prepareVehicleData()
+  protected function getVehicleFormData()
   {
     return [
       "harga" => "40000000",
@@ -73,28 +147,18 @@ class VehicleControllerTest extends TestCase
     ])->get('/api/v1/vehicles/stock');
   }
 
-  protected function getVehicleStockJsonStructure()
-  {
-    return [
-      'success',
-      'message',
-      'data' => [
-        '*' => [
-          'harga',
-          'tahun_keluaran',
-          'terjual',
-          'tipe_kendaraan',
-          'warna',
-        ],
-      ],
-    ];
-  }
-
-  protected function sellVehicleRequest($id)
+  protected function sellVehicleRequest($data)
   {
     return $this->withHeaders([
       'Authorization' => 'Bearer ' . $this->token,
-    ])->postJson('/api/v1/vehicles/sell', ['kendaraan_id' => $id]);
+    ])->postJson('/api/v1/vehicles/sell', $data);
+  }
+
+  protected function getSalesReportRequest()
+  {
+    return $this->withHeaders([
+      'Authorization' => 'Bearer ' . $this->token,
+    ])->get('/api/v1/vehicles/sales-report');
   }
 
   protected function assertVehicleSold($id)
@@ -105,51 +169,20 @@ class VehicleControllerTest extends TestCase
     $this->assertTrue($updatedVehicle['terjual']);
   }
 
-  protected function getSellVehicleJsonData()
+  protected function getExpectedVehicleData($id, $isSold)
   {
     return [
-      'success' => true,
-      'message' => 'Kendaraan terjual',
-      'data' => [
-        '_id' => self::$vehicleId,
-        'harga' => '40000000',
-        'motor' => [
-          'mesin' => '400cc',
-          'tipe_suspensi' => 'Mono Shock',
-          'tipe_transmisi' => 'Manual'
-        ],
-        'tahun_keluaran' => '2023',
-        'terjual' => true,
-        'tipe_kendaraan' => 'motor',
-        'warna' => 'Biru'
+      '_id' => $id,
+      'harga' => '40000000',
+      'motor' => [
+        'mesin' => '400cc',
+        'tipe_suspensi' => 'Mono Shock',
+        'tipe_transmisi' => 'Manual'
       ],
-    ];
-  }
-
-  protected function getSalesReportRequest()
-  {
-    return $this->withHeaders([
-      'Authorization' => 'Bearer ' . $this->token,
-    ])->get('/api/v1/vehicles/sales-report');
-  }
-
-  protected function getSalesReportJsonStructure()
-  {
-    return [
-      'success',
-      'message',
-      'data' => [
-        'mobil' => [
-          'terjual',
-          'tersisa',
-          'total',
-        ],
-        'motor' => [
-          'terjual',
-          'tersisa',
-          'total',
-        ],
-      ],
+      'tahun_keluaran' => '2023',
+      'terjual' => $isSold,
+      'tipe_kendaraan' => 'motor',
+      'warna' => 'Biru'
     ];
   }
 }
