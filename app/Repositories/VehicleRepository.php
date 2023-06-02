@@ -17,28 +17,21 @@ class VehicleRepository
 
   public function getAll(): array
   {
-    // Mengambil semua data kendaraan dari koleksi "kendaraan" menggunakan MongoModel
-    $stocks = $this->vehicleModel->get([]);
-    return $stocks;
+    return $this->vehicleModel->get([]);
   }
 
   public function findById(string $id): ?array
   {
-    // Mencari kendaraan berdasarkan ID di koleksi "kendaraan" menggunakan MongoModel
-    $vehicle = $this->vehicleModel->find(['_id' => $id]);
-    return $vehicle;
+    return $this->vehicleModel->find(['_id' => $id]);
   }
 
   public function save(array $vehicle): string
   {
-    // Menyimpan kendaraan ke koleksi "kendaraan" menggunakan MongoModel
-    $vehicleId = $this->vehicleModel->save($vehicle);
-    return $vehicleId;
+    return $this->vehicleModel->save($vehicle);
   }
 
   public function countSalesByVehicleType(): array
   {
-    // Menghitung penjualan berdasarkan tipe kendaraan
     $filter = [
       [
         '$group' => [
@@ -77,7 +70,6 @@ class VehicleRepository
       ]
     ];
 
-    $result = $this->vehicleModel->count($filter);
-    return $result;
+    return $this->vehicleModel->count($filter);
   }
 }

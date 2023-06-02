@@ -16,19 +16,45 @@ class VehicleControllerTest extends TestCase
   {
     parent::setUp();
 
-    // Inisialisasi database MongoDB dan koneksi
     $vehicleRepository = new VehicleRepository();
     $this->vehicleService = new VehicleService($vehicleRepository);
 
-    // Generate JWT token untuk otentikasi
     $payload = ['email' => 'user@mail.com', 'password' => 'password'];
     $this->token = auth()->attempt($payload);
   }
 
   public function testGetVehicleStock()
   {
-    // Persiapkan data kendaraan di database
-    $formData = [
+    $formData = $this->prepareVehicleData();
+    self::$vehicleId = $this->vehicleService->addVehicle($formData);
+
+    $response = $this->getVehicleStockRequest();
+
+    $response->assertStatus(200);
+    $response->assertJsonStructure($this->getVehicleStockJsonStructure());
+  }
+
+  public function testSellVehicle()
+  {
+    $id = self::$vehicleId;
+    $response = $this->sellVehicleRequest($id);
+
+    $this->assertVehicleSold($id);
+    $response->assertStatus(200);
+    $response->assertJson($this->getSellVehicleJsonData());
+  }
+
+  public function testSalesReport()
+  {
+    $response = $this->getSalesReportRequest();
+
+    $response->assertStatus(200);
+    $response->assertJsonStructure($this->getSalesReportJsonStructure());
+  }
+
+  protected function prepareVehicleData()
+  {
+    return [
       "harga" => "40000000",
       "mesin" => "400cc",
       "tipe_suspensi" => "Mono Shock",
@@ -38,20 +64,18 @@ class VehicleControllerTest extends TestCase
       "tipe_kendaraan" => "motor",
       "warna" => "Biru"
     ];
+  }
 
-    // Menyimpan data kendaraan ke dalam database
-    self::$vehicleId = $this->vehicleService->addVehicle($formData);
-
-    // Kirim permintaan GET ke endpoint /api/v1/vehicles/stock dengan token otentikasi
-    $response = $this->withHeaders([
+  protected function getVehicleStockRequest()
+  {
+    return $this->withHeaders([
       'Authorization' => 'Bearer ' . $this->token,
     ])->get('/api/v1/vehicles/stock');
+  }
 
-    // Pastikan respons berhasil dengan kode status 200
-    $response->assertStatus(200);
-
-    // Pastikan respons JSON sesuai dengan struktur yang diharapkan
-    $response->assertJsonStructure([
+  protected function getVehicleStockJsonStructure()
+  {
+    return [
       'success',
       'message',
       'data' => [
@@ -63,30 +87,27 @@ class VehicleControllerTest extends TestCase
           'warna',
         ],
       ],
-    ]);
+    ];
   }
 
-  public function testSellVehicle()
+  protected function sellVehicleRequest($id)
   {
-    $id = self::$vehicleId;
-
-    // Kirim permintaan POST ke endpoint /api/sell dengan token otentikasi
-    $response = $this->withHeaders([
+    return $this->withHeaders([
       'Authorization' => 'Bearer ' . $this->token,
     ])->postJson('/api/v1/vehicles/sell', ['kendaraan_id' => $id]);
+  }
 
-
-    // Pastikan data kendaraan di database telah diperbarui
+  protected function assertVehicleSold($id)
+  {
     $vehicle = $this->vehicleService->findById($id);
     $this->vehicleService->sellVehicle($vehicle);
     $updatedVehicle = $this->vehicleService->findById($id);
     $this->assertTrue($updatedVehicle['terjual']);
+  }
 
-    // Pastikan respons berhasil dengan kode status 200
-    $response->assertStatus(200);
-
-    // Pastikan respons JSON sesuai dengan data yang diharapkan
-    $response->assertJson([
+  protected function getSellVehicleJsonData()
+  {
+    return [
       'success' => true,
       'message' => 'Kendaraan terjual',
       'data' => [
@@ -102,21 +123,19 @@ class VehicleControllerTest extends TestCase
         'tipe_kendaraan' => 'motor',
         'warna' => 'Biru'
       ],
-    ]);
+    ];
   }
 
-  public function testSalesReport()
+  protected function getSalesReportRequest()
   {
-    // Kirim permintaan GET ke endpoint /api/v1/sales-report dengan token otentikasi
-    $response = $this->withHeaders([
+    return $this->withHeaders([
       'Authorization' => 'Bearer ' . $this->token,
     ])->get('/api/v1/vehicles/sales-report');
+  }
 
-    // Pastikan respons berhasil dengan kode status 200
-    $response->assertStatus(200);
-
-    // Pastikan respons JSON sesuai dengan struktur yang diharapkan
-    $response->assertJsonStructure([
+  protected function getSalesReportJsonStructure()
+  {
+    return [
       'success',
       'message',
       'data' => [
@@ -131,7 +150,6 @@ class VehicleControllerTest extends TestCase
           'total',
         ],
       ],
-    ]);
-
+    ];
   }
 }

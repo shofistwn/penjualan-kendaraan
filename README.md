@@ -99,7 +99,35 @@ Berikut adalah dokumentasi API yang tersedia dalam proyek ini.
 
 ### Autentikasi
 
-1. Login
+1. Register
+
+    **Request**:
+    ```bash
+    POST /api/v1/auth/register
+    
+    Body:
+    {
+        "name" : "John Doe"
+        "email": "user@mail.com",
+        "password": "password"
+    }
+    ```
+    
+    **Response**:
+    ```json
+    {
+        "success": true,
+        "message": "Pendaftaran berhasil",
+        "data": {
+            "_id": "647949443cac74567d0f4919",
+            "email": "user@mail.com",
+            "name": "John Doe",
+            "password": "$2y$10$W0ttWIhBPd5ULcwWkV6eM..."
+        }
+    }
+    ```
+
+2. Login
 
     **Request**:
     ```bash
@@ -128,7 +156,7 @@ Berikut adalah dokumentasi API yang tersedia dalam proyek ini.
     }
     ```
 
-2. Logout
+3. Logout
 
     **Request**:
     ```bash
@@ -142,7 +170,8 @@ Berikut adalah dokumentasi API yang tersedia dalam proyek ini.
     ```json
     {
         "success": true,
-        "message": "Logout berhasil"
+        "message": "Logout berhasil",
+        "data": []
     }
     ```
 
@@ -256,6 +285,88 @@ Berikut adalah dokumentasi API yang tersedia dalam proyek ini.
                 "tersisa": 2,
                 "total": 3
             }
+        }
+    }
+    ```
+
+4. Menambahkan Kendaraan Motor
+
+    **Request**:
+    ```bash
+    POST /api/v1/vehicles/add-motor
+
+    Header:
+    Authorization: Bearer <JWT Token>
+    
+    Body:
+    {
+        "tahun_keluaran": "2018",
+        "warna": "Putih",
+        "harga": "40000000",
+        "mesin": "400cc",
+        "tipe_suspensi": "Mono Shock",
+        "tipe_transmisi": "Automatic"
+    }
+    ```
+    
+    **Response**:
+    ```json
+    {
+        "success": true,
+        "message": "Kendaraan berhasil ditambahkan",
+        "data": {
+            "_id": "647948503cac74567d0f4916",
+            "harga": "40000000",
+            "motor": {
+                "mesin": "400cc",
+                "tipe_suspensi": "Mono Shock",
+                "tipe_transmisi": "Automatic"
+            },
+            "tahun_keluaran": "2018",
+            "terjual": false,
+            "tipe_kendaraan": "motor",
+            "warna": "Putih"
+        }
+    }
+    ```
+
+5. Menambahkan Kendaraan Mobil
+
+    **Request**:
+    ```bash
+    POST /api/v1/vehicles/add-car
+
+    Header:
+    Authorization: Bearer <JWT Token>
+    
+    Body:
+    {
+        "tahun_keluaran": "2022",
+        "warna": "Putih",
+        "harga": "300000000",
+        "mesin": "2000cc",
+        "kapasitas_penumpang": "5",
+        "tipe": "MPV"
+    }
+    ```
+    
+    **Response**:
+    ```json
+    {
+        "success": true,
+        "message": "Kendaraan berhasil ditambahkan",
+        "data": {
+            "_id": "6479487d3cac74567d0f4917",
+            "harga": "300000000",
+            "motor": {
+                "mesin": "2000cc",
+                "kapasitas_penumpang": "5",
+                "tipe": "MPV"
+            },
+            "tahun_keluaran": "2022",
+            "terjual": false,
+            "tipe_kendaraan": "mobil",
+            "warna": "Putih"
         }
     }
     ```

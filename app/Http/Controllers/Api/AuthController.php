@@ -4,95 +4,94 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\MongoModel;
 use App\Http\Controllers\Controller;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-  protected MongoModel $userModel;
+  protected $authService;
 
-  public function __construct()
+  public function __construct(AuthService $authService)
   {
-    $this->userModel = new MongoModel('users');
+    $this->authService = $authService;
   }
 
   public function login(Request $request)
   {
-    // Validasi input
-    $validator = \Validator::make($request->all(), [
+    $validator = Validator::make($request->all(), [
       'email' => 'required',
       'password' => 'required'
     ]);
 
     if ($validator->fails()) {
-      // Jika validasi gagal, kembalikan respons dengan pesan error validasi
-      return response()->json([
-        'success' => false,
-        'message' => 'Validasi gagal',
-        'errors' => $validator->errors()
-      ], 422);
+      return $this->validationErrorResponse($validator);
     }
 
     $credentials = $validator->validated();
     if (!$token = auth()->attempt($credentials)) {
-      // Jika autentikasi gagal, kembalikan respons dengan pesan error autentikasi
-      return response()->json([
-        'success' => false,
-        'message' => 'Password atau email salah'
-      ], 401);
+      return $this->authenticationErrorResponse();
     }
 
-    // Jika autentikasi berhasil, kembalikan respons dengan token akses
-    return response()->json([
-      'success' => true,
-      'message' => 'Login berhasil',
-      'data' => [
-        'access_token' => $token,
-        'token_type' => 'bearer',
-        'expires_in' => auth()->factory()->getTTL() * 60
-      ]
-    ]);
+    return $this->successResponse([
+      'access_token' => $token,
+      'token_type' => 'bearer',
+      'expires_in' => auth()->factory()->getTTL() * 60
+    ], 'Login berhasil');
   }
 
   public function logout()
   {
-    // Logout pengguna
     auth()->logout();
 
-    // Kembalikan respons berhasil logout
-    return response()->json([
-      'success' => true,
-      'message' => 'Logout berhasil'
-    ]);
+    return $this->successResponse([], 'Logout berhasil');
   }
 
   public function register(Request $request)
   {
-    // Validasi input
-    $validator = \Validator::make($request->all(), [
+    $validator = Validator::make($request->all(), [
       'name' => 'required',
       'email' => 'required|email|unique:users,email',
       'password' => 'required|min:8'
     ]);
 
     if ($validator->fails()) {
-      // Jika validasi gagal, kembalikan respons dengan pesan error validasi
-      return response()->json($validator->errors(), 422);
+      return $this->validationErrorResponse($validator);
     }
 
     $requestData = $validator->validated();
     $requestData['password'] = bcrypt($requestData['password']);
 
-    // Simpan pengguna baru ke dalam database
-    $user = $this->userModel->save($requestData);
+    $userId = $this->authService->register($requestData);
+    $user = $this->authService->findById($userId);
 
-    if ($user) {
-      // Jika penyimpanan sukses, kembalikan respons berhasil
-      return response()->json([
-        'success' => true,
-        'message' => 'Pendaftaran berhasil'
-      ]);
-    }
+    return $this->successResponse($user, 'Pendaftaran berhasil');
+  }
+
+  protected function validationErrorResponse($validator)
+  {
+    return response()->json([
+      'success' => false,
+      'message' => 'Validasi gagal',
+      'errors' => $validator->errors()
+    ], 422);
+  }
+
+  protected function authenticationErrorResponse()
+  {
+    return response()->json([
+      'success' => false,
+      'message' => 'Password atau email salah'
+    ], 401);
+  }
+
+  protected function successResponse($data, $message)
+  {
+    return response()->json([
+      'success' => true,
+      'message' => $message,
+      'data' => $data
+    ]);
   }
 }

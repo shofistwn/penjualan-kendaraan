@@ -17,102 +17,81 @@ class VehicleService
 
   public function getVehicleStock(): array
   {
-    // Mengambil data stok kendaraan dari repository
-    $vehicles = $this->vehicleRepository->getAll();
-    return $vehicles;
+    return $this->vehicleRepository->getAll();
   }
 
   public function findById(string $id): ?array
   {
-    // Mencari kendaraan berdasarkan ID dari repository
-    $vehicle = $this->vehicleRepository->findById($id);
-    return $vehicle;
+    return $this->vehicleRepository->findById($id);
   }
 
   public function sellVehicle(array $vehicle): string
   {
-    // Menandai kendaraan sebagai terjual
     $vehicle['terjual'] = true;
-
-    // Menyimpan perubahan kendaraan ke repository
-    $vehicleId = $this->vehicleRepository->save($vehicle);
-    return $vehicleId;
+    return $this->vehicleRepository->save($vehicle);
   }
 
   public function addVehicle(array $requestData): string
   {
     $type = $requestData['tipe_kendaraan'];
+
     if ($type === 'motor') {
-      // Menambahkan detail kendaraan motor
-      $motorcycle = $this->addMotorVehicle($requestData);
-      $data['motor'] = $motorcycle;
+      $vehicle = $this->addMotorVehicle($requestData);
     } else if ($type === 'mobil') {
-      // Menambahkan detail kendaraan mobil
-      $car = $this->addCarVehicle($requestData);
-      $data['mobil'] = $car;
+      $vehicle = $this->addCarVehicle($requestData);
     }
 
-    // Menambahkan informasi umum kendaraan
-    $data['tahun_keluaran'] = $requestData['tahun_keluaran'];
-    $data['warna'] = $requestData['warna'];
-    $data['harga'] = $requestData['harga'];
-    $data['tipe_kendaraan'] = $requestData['tipe_kendaraan'];
-    $data['terjual'] = false;
-
-    // Menyimpan kendaraan ke repository
-    $vehicleId = $this->vehicleRepository->save($data);
-    return $vehicleId;
+    $vehicle['terjual'] = false;
+    return $this->vehicleRepository->save($vehicle);
   }
 
   private function addMotorVehicle(array $requestData): array
   {
-    // Menambahkan detail kendaraan motor
-    $data['mesin'] = $requestData['mesin'];
-    $data['tipe_suspensi'] = $requestData['tipe_suspensi'];
-    $data['tipe_transmisi'] = $requestData['tipe_transmisi'];
+    $vehicle['motor'] = [
+      'mesin' => $requestData['mesin'],
+      'tipe_suspensi' => $requestData['tipe_suspensi'],
+      'tipe_transmisi' => $requestData['tipe_transmisi'],
+    ];
 
-    return $data;
+    return $this->addGeneralVehicleDetails($requestData, $vehicle, 'motor');
   }
 
   private function addCarVehicle(array $requestData): array
   {
-    // Menambahkan detail kendaraan mobil
-    $data['mesin'] = $requestData['mesin'];
-    $data['kapasitas_penumpang'] = $requestData['kapasitas_penumpang'];
-    $data['tipe'] = $requestData['tipe'];
+    $vehicle['motor'] = [
+      'mesin' => $requestData['mesin'],
+      'kapasitas_penumpang' => $requestData['kapasitas_penumpang'],
+      'tipe' => $requestData['tipe'],
+    ];
 
-    return $data;
+    return $this->addGeneralVehicleDetails($requestData, $vehicle, 'mobil');
   }
+
+  private function addGeneralVehicleDetails(array $requestData, array $vehicle, string $type): array
+  {
+    $vehicle['tahun_keluaran'] = $requestData['tahun_keluaran'];
+    $vehicle['warna'] = $requestData['warna'];
+    $vehicle['harga'] = $requestData['harga'];
+    $vehicle['tipe_kendaraan'] = $requestData['tipe_kendaraan'];
+
+    return $vehicle;
+  }
+
   public function countSalesByVehicleType(): array
   {
-    // Mengambil hasil perhitungan penjualan kendaraan dari repository
     $result = $this->vehicleRepository->countSalesByVehicleType();
-
-    // Inisialisasi array untuk menyimpan hasil
     $data = [];
 
-    // Melakukan iterasi pada hasil perhitungan
     foreach ($result as $value) {
-      // Jika tipe kendaraan adalah 'motor'
-      if ($value['tipe_kendaraan'] === 'motor') {
-        // Menyimpan data penjualan kendaraan motor
-        $data['motor'] = [
-          'terjual' => $value['terjual'],
-          'tersisa' => $value['tersisa'],
-          'total' => $value['total'],
-        ];
-      } else {
-        // Jika tipe kendaraan bukan 'motor' (dianggap 'mobil')
-        // Menyimpan data penjualan kendaraan mobil
-        $data['mobil'] = [
-          'terjual' => $value['terjual'],
-          'tersisa' => $value['tersisa'],
-          'total' => $value['total'],
-        ];
-      }
+      $type = $value['tipe_kendaraan'];
+
+      $data[$type] = [
+        'terjual' => $value['terjual'],
+        'tersisa' => $value['tersisa'],
+        'total' => $value['total'],
+      ];
     }
 
-    // Mengembalikan data hasil perhitungan
     return $data;
   }
 }

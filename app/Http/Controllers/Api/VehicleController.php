@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Services\VehicleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class VehicleController extends Controller
 {
@@ -20,7 +21,6 @@ class VehicleController extends Controller
 
   public function getVehicleStock(): JsonResponse
   {
-    // Mengambil data stok kendaraan
     $vehicles = $this->vehicleService->getVehicleStock();
 
     return response()->json([
@@ -32,43 +32,27 @@ class VehicleController extends Controller
 
   public function sellVehicle(Request $request): JsonResponse
   {
-    // Validasi input
-    $validator = \Validator::make($request->all(), [
+    $validator = Validator::make($request->all(), [
       'kendaraan_id' => 'required'
     ]);
 
     if ($validator->fails()) {
-      return response()->json([
-        'success' => false,
-        'message' => 'Validasi gagal',
-        'errors' => $validator->errors()
-      ], 422);
+      return $this->validationErrorResponse($validator);
     }
 
-    // Mendapatkan ID kendaraan dari request
     $vehicleId = $request->input('kendaraan_id');
-
-    // Cek keberadaan kendaraan
-    $vehicle = $this->vehicleService->findById($vehicleId);
+    $vehicle = $this->findVehicleById($vehicleId);
 
     if (!$vehicle) {
-      return response()->json([
-        'success' => false,
-        'message' => 'Kendaraan tidak ditemukan'
-      ], 404);
+      return $this->vehicleNotFoundResponse();
     }
 
-    // Cek apakah kendaraan sudah terjual
     if ($vehicle['terjual']) {
-      return response()->json([
-        'success' => false,
-        'message' => 'Kendaraan sudah terjual'
-      ], 404);
+      return $this->alreadySoldResponse();
     }
 
-    // Jual kendaraan
     $vehicleId = $this->vehicleService->sellVehicle($vehicle);
-    $vehicle = $this->vehicleService->findById($vehicleId);
+    $vehicle = $this->findVehicleById($vehicleId);
 
     return response()->json([
       'success' => true,
@@ -77,12 +61,10 @@ class VehicleController extends Controller
     ]);
   }
 
-  public function salesReport()
+  public function salesReport(): JsonResponse
   {
-    // Mendapatkan laporan penjualan kendaraan
     $vehicles = $this->vehicleService->countSalesByVehicleType();
 
-    // Mengembalikan laporan penjualan kendaraan
     return response()->json([
       'success' => true,
       'message' => 'Dapatkan laporan penjualan',
@@ -90,36 +72,81 @@ class VehicleController extends Controller
     ]);
   }
 
-  public function addVehicle(Request $request): JsonResponse
+  public function addMotorVehicle(Request $request): JsonResponse
   {
-    // Validasi input
-    $validator = \Validator::make($request->all(), [
+    $validator = Validator::make($request->all(), [
       'tahun_keluaran' => 'required',
       'warna' => 'required',
       'harga' => 'required',
-      'tipe_kendaraan' => 'required',
-      'mesin' => 'required'
+      'mesin' => 'required',
+      'tipe_suspensi' => 'required',
+      'tipe_transmisi' => 'required',
     ]);
 
+    $request['tipe_kendaraan'] = 'motor';
+    return $this->addVehicle($validator, $request);
+  }
+
+  public function addCarVehicle(Request $request): JsonResponse
+  {
+    $validator = Validator::make($request->all(), [
+      'tahun_keluaran' => 'required',
+      'warna' => 'required',
+      'harga' => 'required',
+      'mesin' => 'required',
+      'kapasitas_penumpang' => 'required',
+      'tipe' => 'required',
+    ]);
+
+    $request['tipe_kendaraan'] = 'mobil';
+    return $this->addVehicle($validator, $request);
+  }
+
+  protected function addVehicle($validator, $request): JsonResponse
+  {
     if ($validator->fails()) {
-      return response()->json([
-        'success' => false,
-        'message' => 'Validasi gagal',
-        'errors' => $validator->errors()
-      ], 422);
+      return $this->validationErrorResponse($validator);
     }
 
-    // Mendapatkan data kendaraan dari request
     $requestData = $request->all();
 
-    // Menambahkan kendaraan
     $vehicleId = $this->vehicleService->addVehicle($requestData);
-    $vehicle = $this->vehicleService->findById($vehicleId);
+    $vehicle = $this->findVehicleById($vehicleId);
 
     return response()->json([
       'success' => true,
       'message' => 'Kendaraan berhasil ditambahkan',
       'data' => $vehicle
     ]);
+  }
+
+  protected function findVehicleById($vehicleId)
+  {
+    return $this->vehicleService->findById($vehicleId);
+  }
+
+  protected function vehicleNotFoundResponse(): JsonResponse
+  {
+    return response()->json([
+      'success' => false,
+      'message' => 'Kendaraan tidak ditemukan'
+    ], 404);
+  }
+
+  protected function alreadySoldResponse(): JsonResponse
+  {
+    return response()->json([
+      'success' => false,
+      'message' => 'Kendaraan sudah terjual'
+    ], 404);
+  }
+
+  protected function validationErrorResponse($validator): JsonResponse
+  {
+    return response()->json([
+      'success' => false,
+      'message' => 'Validasi gagal',
+      'errors' => $validator->errors()
+    ], 422);
   }
 }
